@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" onclick="lompat()">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DINO</title>
+<style>
+*{
+    padding: 0;
+    margin: 0;
+}
+@keyframes lari{
+    from{background-position: 0px 0px;}
+    to{background-position: -660px 0px;}
+} 
+@keyframes blok{
+    from{left:635px;}
+    to{left: -40px;}
+}
+@keyframes lompat {
+    0%{top: 300px;}
+    30%{top: 250px;}
+    70%{top: 250px;}
+    100%{top: 300px;}
+}
+#player{
+    width: 77px;
+    height: 110px;
+
+    position: relative;
+    top: 300px;
+}
+.player1{
+    background: url(animasi1.png);
+    background-position: 154px 0px;
+}
+.player2{
+    background: url(animasi2.png);
+    background-position: 154px 0px;
+}
+.lari{
+    animation: lari 1s steps(8) infinite;
+}
+.animate{
+    animation: lompat 500ms;
+}
+h2{
+    position: relative;
+    top:3em;
+    text-align: center;
+}
+#ui{
+    position: relative;
+    top: 50%;
+    left: 25%;
+    /* transform: translate(-50%, -50%); */
+}
+#restart{
+    position: relative;
+    top: 40%;
+    left: 25%;
+    /* transform: translate(-50%, -50%); */
+}
+button{
+    width: 282px;
+    height: 45.63px;
+    background: linear-gradient(0deg, rgba(51, 255, 0, 0.78) 1%, #3c70da 101.57%);
+    border-radius: 20px;
+    
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 24px;
+    cursor: pointer;
+}
+#level button{
+    width: 100px;
+    height: 45.63px;
+    position: relative;
+    left: 23%;
+    transform: translateY(400%);
+}
+button:active{
+    background: skyblue;
+}
+img{
+    width: 100px;
+    height: 100px;
+}
+#map{/*MENGATUR MAP*/
+    align-items: center;
+    width: 635px;
+    height: 400px;
+    border: 1px solid black;
+    background : url('bg1.png');
+    background-size : contain;
+}
+#blok{
+    width: 30px;
+    height: 30px;
+    background: url(obs1.png);
+    background-size: contain;
+    position: relative;
+    top: 262px;
+    left:635px;
+    animation: blok 2s linear infinite;
+}
+</style>
+</head>
+<body>
+    <div id="map">
+        <div id="ui">
+            <button onclick="menuLevel()">PLAY</button>
+        </div>
+        <div id="menu" style="display: none;">
+            <div id="level">
+                <button onclick="level(1)">level 1</button>
+                <button onclick="level(2)">level 2</button>
+                <button onclick="level(3)">level 3</button>
+            </div>
+            <div id="pilihPemain" style="display: none">
+                <img src="player1.png">
+                <img src="player2.png">
+            </div>
+        </div>
+        <div id="game" style="display: none;">
+            <div id="player" class="lari"></div>
+            <div id="blok"></div>
+            <h2>SCORE:<span id="skor">0</span></h2>
+        </div>
+        <button id="restart" onclick="GAME()" style="display: none">RESTART</button>
+    </div>
+<script>
+var ui = document.getElementById('ui');
+var game = document.getElementById('game');
+var map = document.getElementById('map');
+var Vrestart = document.getElementById('restart');
+var player = document.getElementById('player');
+var blok = document.getElementById('blok');
+var pilihP = document.querySelectorAll('#pilihPemain img');
+var tingkatan;
+var waktu = setInterval(random,500);
+var bola;
+
+function menuLevel(){
+    ui.style.display = 'none';
+    document.getElementById('menu').style.display = "";
+}
+//PILIH LEVEL
+
+function level(level){
+    document.getElementById('level').style.display = "none";
+    tingkatan = level; //MENENTUKAN LEVEL MANA YANG DIPILIH
+    if(tingkatan==3){ //MENGECEK NILAI MANA YANG SESUAI
+        map.style.background = "url('bg3.png')";
+        map.style.backgroundSize = "contain";
+    } else if(tingkatan==2){
+        map.style.background = "url('bg2.png')";
+        map.style.backgroundSize = "contain";
+    } else{}
+
+    pilihPlayer();//jalankan fungsi pilihPlayer
+}
+
+ //mengubah asset bola secara random
+function random(){
+    bola = Math.round(Math.random()*1+1); //variable random
+    if(tingkatan==3){
+        blok.style.background = "url('obs"+(bola+2)+".png')"
+        blok.style.backgroundSize = 'contain'
+        Vrestart.style.background = 'linear-gradient(0deg, rgb(0 0 0 / 78%) 1%, #626772 101.57%)'
+    }else if(tingkatan==2){
+        blok.style.background = "url('obs"+bola+".png')"
+        blok.style.backgroundSize = 'contain';
+    }else{}
+}
+
+function pilihPlayer(){
+    document.getElementById('pilihPemain').style.display = "";
+    for(let i=0; i < pilihP.length; i++){
+        pilihP[i].addEventListener('click', function(){
+            nilaiPlayer = i;
+            document.getElementById('pilihPemain').style.display = "none";
+            GAME(); 
+            //MENGECEK karakter yang dipilih
+            if(nilaiPlayer == 0) {
+                player.classList.add('player1');
+            }else player.classList.add('player2');
+        });   
+    }
+}
+function GAME(){
+    let skor=0;
+    game.style.display = '';
+    frame = setInterval(() => {
+        skor +=1
+        document.getElementById('skor').innerHTML = skor;
+        switch (tingkatan) {
+        case 3:
+            if(skor==5000){
+                document.querySelector('h2').innerHTML = 'CONGRATULATIONS';
+                Vrestart.innerHTML = 'PLAY AGAIN';
+            }
+            break;
+        case 2:
+            if(skor==2500){
+                document.querySelector('h2').innerHTML = 'CONGRATULATIONS';
+                Vrestart.innerHTML = 'PLAY AGAIN';
+            }
+            break;
+        default:
+            if(skor==1000){
+                document.querySelector('h2').innerHTML = 'CONGRATULATIONS';
+                Vrestart.innerHTML = 'PLAY AGAIN';
+            }
+            break;
+        }
+    }, 10);
+    
+    blok.style.animation = "";
+    blok.style.display = "";
+    Vrestart.style.display = "none";
+}
+function lompat(){
+    if(player.classList != 'animate'){
+        player.classList.replace('lari', 'animate')
+    }
+    setTimeout(function(){
+        player.classList.replace('animate', "lari");
+    },500)
+}
+
+var Cdead =  setInterval(function(){
+    var playertop = parseInt(window.getComputedStyle(player).getPropertyValue("top"));
+    var blokleft = parseInt(window.getComputedStyle(blok).getPropertyValue("left"));
+    //mengecek apakah balok menabrak pemain
+    if(blokleft<63 && blokleft>0 && playertop>=290){
+        blok.style.animation = "none";
+        blok.style.display = "none";
+        Vrestart.style.display = "";
+        clearInterval(frame);
+    }
+},10)
+</script>    
+</body>
+</html>
